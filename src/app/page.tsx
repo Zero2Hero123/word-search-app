@@ -30,7 +30,7 @@ export default function Home() {
 
 
           <Link href='/game'>
-            <button className="bg-blue-500 text-white">Start</button>
+            <button className="bg-blue-500 text-white rounded-sm px-2 py-2 my-2 hover:bg-blue-400 transition-all">Start</button>
           </Link>
         </div>
       </main>
