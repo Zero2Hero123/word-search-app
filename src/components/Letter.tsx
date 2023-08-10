@@ -49,10 +49,6 @@ export default function Letter({letter,setSelecting, updateSequence,updateLetter
     }
 
     function check(){
-        console.log('letter--')
-        console.log('next: '+nextLetter.letter)
-        console.log('next id: '+nextLetter.id)
-        console.log('---')
 
         if(isSelecting && nextLetter.letter == letter && nextLetter.id == k){
             updateSequence(prev => [...prev,letter])

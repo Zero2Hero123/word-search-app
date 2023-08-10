@@ -2,7 +2,7 @@
 
 import { v4 as uuidv4 } from 'uuid'
 
-import { createContext, useState, useEffect, useMemo, useLayoutEffect } from "react";
+import { createContext, useState, useEffect, useMemo, useLayoutEffect, Dispatch, SetStateAction } from "react";
 import Letter from "./Letter";
 import { useRouter } from 'next/router';
 
@@ -10,6 +10,8 @@ import { useRouter } from 'next/router';
 interface Props {
     letters: string[][];
     length: number;
+    words: string[];
+    updateFound: Dispatch<SetStateAction<string[]>>
 }
 
 export type Direction = 'up'| 'down' | 'right' | 'left' | null | 'upL' | 'upR' | 'downL' | 'downR'
@@ -46,7 +48,7 @@ export function create2dArray<T>(length: number, letters: string[][]): T[][] {
     return newArr;
 }
 
-export default function WordSearchGrid({length, letters}: Props){
+export default function WordSearchGrid({length, letters, words, updateFound}: Props){
 
     const [isSelecting,setSelecting] = useState<boolean>(false);
     const [selectingDirection,setDirection] = useState<Direction>(null)
@@ -73,7 +75,10 @@ export default function WordSearchGrid({length, letters}: Props){
     },[selectingDirection,selectedLetterIds])
 
     useEffect(() => {
+        checkForWord(selectedSequence.join(""));
+
         if(!isSelecting){
+
             updateSelectedSequence([]);
             updateLetterIds([]);
             setDirection(null)
@@ -81,13 +86,22 @@ export default function WordSearchGrid({length, letters}: Props){
 
        
 
-    },[isSelecting])
+    },[isSelecting,selectedSequence])
 
     useEffect(() => {
         if(isSelecting && selectedSequence.length >= 2 && selectingDirection == null){
             setDirection(getDirection());
         }
     },[selectedLetterIds,selectedSequence])
+
+    // 
+    function checkForWord(word: string){
+        if(words.includes(word)){
+            // user found a word!
+            
+            updateFound(prev => [...prev,word]);
+        }
+    }
 
     function getDirection(): Direction {
 
