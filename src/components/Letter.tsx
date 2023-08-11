@@ -14,10 +14,12 @@ interface Props {
     allIds: string[][];
     nextLetter: Char
     selectingDirection: Direction
+
+    foundIds: string[]
 }
 
 
-export default function Letter({letter,setSelecting, updateSequence,updateLetterIds,letterIds, k,nextLetter,selectingDirection}: Props){
+export default function Letter({letter,setSelecting, updateSequence,updateLetterIds,letterIds, k,nextLetter,selectingDirection,foundIds}: Props){
 
     const isSelecting = useContext(selectedContext);
     const container = useRef<HTMLDivElement>(null);
@@ -33,7 +35,10 @@ export default function Letter({letter,setSelecting, updateSequence,updateLetter
         } else {
             if(container.current){
                 container.current.classList.replace('bg-blue-500','bg-white')
-                container.current.classList.remove('text-white')
+                
+                if(!foundIds.includes(k)){
+                    container.current.classList.remove('text-white')
+                }
             }
         }
         
@@ -66,6 +71,6 @@ export default function Letter({letter,setSelecting, updateSequence,updateLetter
     
 
     return (
-        <div ref={container} onPointerOver={check} onPointerDown={() => update(true)} onPointerUp={() => update(false)}  className={` border rounded-md bg-white flex justify-center items-center text-4xl font-bold select-none hover:cursor-pointer active:bg-blue-600 active:text-white transition-all`}>{letter.toUpperCase()}</div>
+        <div ref={container} onPointerOver={check} onPointerDown={() => update(true)} onPointerUp={() => update(false)}  className={`${foundIds.includes(k) && 'bg-green-500 text-white'} border rounded-md bg-white flex justify-center items-center text-4xl font-bold select-none hover:cursor-pointer active:bg-blue-600 active:text-white transition-all`}>{letter.toUpperCase()}</div>
     )
 }

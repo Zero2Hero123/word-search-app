@@ -52,7 +52,8 @@ export default function WordSearchGrid({length, letters, words, updateFound}: Pr
 
     const [isSelecting,setSelecting] = useState<boolean>(false);
     const [selectingDirection,setDirection] = useState<Direction>(null)
-
+    
+    const [foundLetterIds,updateFoundLetterIds] = useState<string[]>([])
     const [selectedSequence,updateSelectedSequence] = useState<string[]>([]);
     const [selectedLetterIds,updateLetterIds] = useState<string[]>([]);
 
@@ -75,6 +76,7 @@ export default function WordSearchGrid({length, letters, words, updateFound}: Pr
     },[selectingDirection,selectedLetterIds])
 
     useEffect(() => {
+        if(selectedSequence.length == 0) return;
         checkForWord(selectedSequence.join(""));
 
         if(!isSelecting){
@@ -100,6 +102,7 @@ export default function WordSearchGrid({length, letters, words, updateFound}: Pr
             // user found a word!
             
             updateFound(prev => [...prev,word]);
+            updateFoundLetterIds(prev => [...prev,...selectedLetterIds])
         }
     }
 
@@ -225,7 +228,7 @@ export default function WordSearchGrid({length, letters, words, updateFound}: Pr
                         letters.map((L: string[],i) => L.map((L2,j) => {
 
                             
-                            return <Letter nextLetter={nextLetter} selectingDirection={selectingDirection}  allIds={allIds} updateLetterIds={updateLetterIds} letterIds={selectedLetterIds} updateSequence={updateSelectedSequence} setSelecting={setSelecting} k={L2+i+j} key={L2+i+j} letter={L2}/>
+                            return <Letter foundIds={foundLetterIds} nextLetter={nextLetter} selectingDirection={selectingDirection}  allIds={allIds} updateLetterIds={updateLetterIds} letterIds={selectedLetterIds} updateSequence={updateSelectedSequence} setSelecting={setSelecting} k={L2+i+j} key={L2+i+j} letter={L2}/>
                         }))
                     }
                 
