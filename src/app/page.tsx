@@ -68,6 +68,7 @@ export default function Home() {
 
           
             <Link href={{pathname: '/game', query: {
+              length: length,
               words: words.join(',')
             }}}>
               <button className="bg-blue-500 text-white rounded-sm px-2 py-2 my-2 hover:bg-blue-400 transition-all" >Start</button>
