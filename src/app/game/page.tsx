@@ -8,6 +8,8 @@ import createGenerator from "./generate";
 import { ArrowLeftToLine } from "lucide-react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 
 export const dynamic = 'force-dynamic'
@@ -18,10 +20,13 @@ export default function Game(){
     const [grid,setGrid] = useState<string[][]>(createEmptyGrid())
 
     let [words,setWords] = useState<string[]>([]);
+    let [reducedWords,setReduced] = useState<string[]>([])
     const gridGenerator = useMemo(() => createGenerator(words,gridLength),[words])
 
     const [foundWords,updateFoundWords] = useState<string[]>([]);
     const [timer,updateTimer] = useState<number>(0);
+    const [isSolved,setSolved] = useState<boolean>(false)
+
     const parsedTime = useMemo(() => {
 
         return `${Math.floor(timer / 60)}:${(timer % 60) > 9 ? (timer % 60) : '0'+(timer % 60)}`
@@ -32,7 +37,9 @@ export default function Game(){
 
     useEffect(() => {
         const timer = setInterval(() => {
-            updateTimer(prev => prev+1)
+            if(!isSolved) updateTimer(prev => prev+1);
+
+            console.log(sessionStorage.getItem('unused'))
         },1000)
 
         return () => {
@@ -41,13 +48,30 @@ export default function Game(){
     },[])
 
     useEffect(() => {
-        console.log(words)
+        if(foundWords.length == words.length){
+            // COMPLETED
+            setSolved(false)
+            console.log("SOLVED")
+        }
+    },[foundWords])
 
+    useEffect(() => {
         gridGenerator.generateGrid()
-            .then(newGrid => setGrid(newGrid))
-            .catch(err => {
-                console.log(err)
+            .then((res) => {
+
+                console.log(res)
+                setGrid(res)
+
+                setReduced(words.filter(w => sessionStorage.getItem('unused')!.split(',').indexOf(w) == -1))
             })
+            .catch(err => {
+                console.error(err)
+            })
+    },[words])
+
+    useEffect(() => {
+        console.log(words)
+        console.log(grid)
     },[words])
 
     const alphabet = [
@@ -80,7 +104,7 @@ export default function Game(){
                 </header>
                 <main className=' flex flex-col justify-center items-center'>
                     <section className="grow flex justify-center items-center">
-                        <WordSearchGrid  updateFound={updateFoundWords} words={words} length={gridLength} letters={grid}/>
+                        <WordSearchGrid  updateFound={updateFoundWords} words={reducedWords} length={gridLength} letters={grid}/>
                     </section>
                 </main>
             </div>
@@ -91,10 +115,10 @@ export default function Game(){
 
                     <p  className="text-blue-500 text-4xl font-medium">Word Bank</p>
                     <Link className="bg-red-500 hover:bg-red-400 text-white p-1 rounded-md" href='/'><ArrowLeftToLine/></Link>
-                    {words.length > 0 ? 
+                    {reducedWords.length > 0 ? 
                         <div className=" justify-center items-center">
                         {
-                            words.map((word: string) => <p key={"W-"+word} className={`block font-medium justify-center text-black text-xl ${foundWords.includes(word) && 'line-through opacity-70'}`} >{word.toUpperCase()}</p>)
+                            reducedWords.map((word: string) => <p key={"W-"+word} className={`block font-medium justify-center text-black text-xl ${foundWords.includes(word) && 'line-through opacity-70'}`} >{word.toUpperCase()}</p>)
                         }
                         </div>    
                         :
@@ -104,6 +128,25 @@ export default function Game(){
                 <span className="text-3xl font-bold text-blue-500">{parsedTime}</span>
             </div>
         </div>
+        <Drawer open>
+            <DrawerContent>
+                <DrawerHeader>
+                    <DrawerTitle>
+                        <span className="text-4xl text-white flex justify-center">You Did It!</span>
+                    </DrawerTitle>
+                    <DrawerDescription className="flex justify-center text-2xl">
+                        You solved the Word Search in {parsedTime}
+                    </DrawerDescription>
+                </DrawerHeader>
+                <DrawerFooter>
+                    <div className="flex justify-center">
+                        <Link href='/'>
+                            <Button>Back to Home</Button>
+                        </Link>
+                    </div>
+                </DrawerFooter>
+            </DrawerContent>
+        </Drawer>
         </>
     )
 }

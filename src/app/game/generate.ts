@@ -13,6 +13,12 @@ interface WordGenerator {
     generateGrid: () => Promise<string[][]>
 }
 
+interface WordGenResponse {
+    words: string[],
+    unusedWords: string[],
+    grid: string[][]
+}
+
 type Params = {
     newGrid: string[][]
     length: number
@@ -41,7 +47,7 @@ function createGenerator(words: string[],gridLength: number): WordGenerator{
 }
 
 const generate = async ({newGrid, words,length}: Params): Promise<string[][]> => {
-    if(words.length == 0) return newGrid; //addRandomLetters(newGrid);
+    if(words.length == 0) return newGrid; // addRandomLetters(newGrid);
 
     const currWord = words[0]
 
@@ -68,7 +74,14 @@ const generate = async ({newGrid, words,length}: Params): Promise<string[][]> =>
         
         newGrid = await placeAt(newGrid,currWord,{x: confirmedX,y: confirmedY},chosenDirection)
     } else {
-        console.warn(`Unable to insert ${currWord} in grid`)
+        console.warn(`Unable to insert Word '${currWord}' in grid`)
+
+        if(sessionStorage.getItem('unused')){
+            sessionStorage.setItem('unused',sessionStorage.getItem('unused')+currWord+',')
+        } else {
+            sessionStorage.setItem('unused',currWord+',')
+        }
+        
         return generate({
             newGrid,
             words: words.slice(1),

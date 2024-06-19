@@ -34,6 +34,7 @@ export default function Home() {
   },[isRandom])
 
   useEffect(() => {
+    sessionStorage.setItem('unused','')
     console.log(words)
   },[words])
 
@@ -47,12 +48,12 @@ export default function Home() {
         <div className="flex flex-col gap-1 justify-start items-center bg-gray-200 drop-shadow-md rounded-md w-[500px] h-[500px] px-5">
           <p className='text-2xl py-2 text-gray-500 text-center'>Settings</p>
           
-          <p className="text-gray-500 text-xl">Dimensions: </p>
-          <span> <input className='outline-0 w-12' onChange={(e) => setLength(e.target.valueAsNumber)} type="number" min='8' max='12' value={length}/> letters by {length} </span>
+          {/* <p className="text-gray-500 text-xl">Dimensions: </p>
+          <span> <input className='outline-0 w-12' onChange={(e) => setLength(e.target.valueAsNumber)} type="number" min='8' max='12' value={length}/> letters by {length} </span> */}
           <p className="text-gray-500 text-xl">Words:</p>
           <select className="outline-0" onChange={(e) => setRandom((e.target.value == 'Random') ? true : false)}>
-            <option value="Random"> <span className='text-sm'>Random</span> </option>  
-            <option value="Custom"> <span className='text-sm'>Custom</span> </option>  
+            <option value="Random" className="text-sm"> Random </option>  
+            <option value="Custom" className="text-sm"> Custom </option>  
           </select> 
 
           {!isRandom && 
