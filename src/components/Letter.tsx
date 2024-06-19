@@ -71,6 +71,6 @@ export default function Letter({letter,setSelecting, updateSequence,updateLetter
     
 
     return (
-        <div ref={container} onPointerOver={check} onPointerDown={() => update(true)} onPointerUp={() => update(false)}  className={`${foundIds.includes(k) && 'bg-green-500 text-white'} border rounded-md bg-white flex justify-center items-center text-4xl font-bold select-none hover:cursor-pointer active:bg-blue-600 active:text-white transition-all`}>{letter.toUpperCase()}</div>
+        <div ref={container} onPointerOver={check} onPointerDown={() => update(true)} onPointerUp={() => update(false)}  className={`${foundIds.includes(k) ? 'bg-green-500 text-white' : 'bg-white'} border rounded-md flex justify-center items-center text-4xl font-bold select-none hover:cursor-pointer active:bg-blue-600 active:text-white transition-all`}>{letter.toUpperCase()}</div>
     )
 }

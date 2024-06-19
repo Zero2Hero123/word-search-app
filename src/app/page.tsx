@@ -10,7 +10,7 @@ function generateWords(howMany: number): string[] {
   let newWords: string[] = []
 
   for(let i = 0; i<howMany; i++){
-    let randomIdx = Math.round(Math.random() * allWords.length-1)
+    let randomIdx = Math.round(Math.random() * allWords.filter(w => w.length > 2).length-1)
 
     newWords.push(allWords[randomIdx])
   }
