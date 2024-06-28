@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { useEffect, useState, createContext } from "react"
+import { useEffect, useState, createContext, Suspense } from "react"
 
 import allWords from './words.json'
 
