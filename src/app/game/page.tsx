@@ -11,8 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 
-
-export const dynamic = 'force-dynamic'
 export default function Game(){
     const params = useSearchParams();
 
