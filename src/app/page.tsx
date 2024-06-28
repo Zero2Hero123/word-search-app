@@ -10,7 +10,7 @@ function generateWords(howMany: number): string[] {
   let newWords: string[] = []
 
   for(let i = 0; i<howMany; i++){
-    let randomIdx = Math.round(Math.random() * allWords.filter(w => w.length > 2).length-1)
+    let randomIdx = Math.floor(Math.random() * allWords.filter(w => w.length > 2).length-1)
 
     newWords.push(allWords[randomIdx])
   }
@@ -33,11 +33,6 @@ export default function Home() {
     }
   },[isRandom])
 
-  useEffect(() => {
-    sessionStorage.setItem('unused','')
-    console.log(words)
-  },[words])
-
   return (
     <>
       <header >
@@ -53,7 +48,7 @@ export default function Home() {
           <p className="text-gray-500 text-xl">Words:</p>
           <select className="outline-0" onChange={(e) => setRandom((e.target.value == 'Random') ? true : false)}>
             <option value="Random" className="text-sm"> Random </option>  
-            <option value="Custom" className="text-sm"> Custom </option>  
+            {/* <option value="Custom" className="text-sm"> Custom </option>   */}
           </select> 
 
           {!isRandom && 

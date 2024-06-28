@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { uuid } from "uuidv4";
 
 export default function Game(){
     const params = useSearchParams();
@@ -17,8 +18,7 @@ export default function Game(){
     const [gridLength,setLength] = useState<number>(10);
     const [grid,setGrid] = useState<string[][]>(createEmptyGrid())
 
-    let [words,setWords] = useState<string[]>([]);
-    let [reducedWords,setReduced] = useState<string[]>([])
+    let [words,setWords] = useState<string[]>(params.get('words')!.split(','));
     const gridGenerator = useMemo(() => createGenerator(words,gridLength),[words])
 
     const [foundWords,updateFoundWords] = useState<string[]>([]);
@@ -36,8 +36,6 @@ export default function Game(){
     useEffect(() => {
         const timer = setInterval(() => {
             if(!isSolved) updateTimer(prev => prev+1);
-
-            console.log(sessionStorage.getItem('unused'))
         },1000)
 
         return () => {
@@ -55,22 +53,18 @@ export default function Game(){
     },[foundWords])
 
     useEffect(() => {
+        if(grid[0][0] != '') return;
         gridGenerator.generateGrid()
             .then((res) => {
 
                 console.log(res)
-                setGrid(res)
+                setGrid(res.grid)
+                setWords(res.words)
 
-                setReduced(words.filter(w => sessionStorage.getItem('unused')!.split(',').indexOf(w) == -1))
             })
             .catch(err => {
                 console.error(err)
             })
-    },[words])
-
-    useEffect(() => {
-        console.log(words)
-        console.log(grid)
     },[words])
 
     const alphabet = [
@@ -78,18 +72,6 @@ export default function Game(){
         ['k','l','m','n','o','p','q','r','r','t'],
         ['u','v','w','x','y','z']
     ]
-
-    useEffect(() => {
-
-        let paramWords = params.get('words')
-        let paramLength = params.get('length')
-        if(paramWords){
-            setWords(paramWords.split(','))
-            setLength(Number(paramLength))
-        } else {
-            console.log('bruh, words not found')
-        }
-    },[])
 
 
     return (
@@ -103,7 +85,7 @@ export default function Game(){
                 </header>
                 <main className=' flex flex-col justify-center items-center'>
                     <section className="grow flex justify-center items-center">
-                        <WordSearchGrid  updateFound={updateFoundWords} words={reducedWords} length={gridLength} letters={grid}/>
+                        <WordSearchGrid  updateFound={updateFoundWords} words={words} length={gridLength} letters={grid}/>
                     </section>
                 </main>
             </div>
@@ -114,10 +96,10 @@ export default function Game(){
 
                     <p  className="text-blue-500 text-4xl font-medium">Word Bank</p>
                     <Link className="bg-red-500 hover:bg-red-400 text-white p-1 rounded-md" href='/'><ArrowLeftToLine/></Link>
-                    {reducedWords.length > 0 ? 
+                    {words.length > 0 ? 
                         <div className=" justify-center items-center">
                         {
-                            reducedWords.map((word: string) => <p key={"W-"+word} className={`block font-medium justify-center text-black text-xl ${foundWords.includes(word) && 'line-through opacity-70'}`} >{word.toUpperCase()}</p>)
+                            words.map((word: string) => <p key={uuid()} className={`block font-medium justify-center text-black text-xl ${foundWords.includes(word) && 'line-through opacity-70'}`} >{word.toUpperCase()}</p>)
                         }
                         </div>    
                         :

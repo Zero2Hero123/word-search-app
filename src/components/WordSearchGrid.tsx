@@ -100,6 +100,8 @@ export default function WordSearchGrid({length, letters, words, updateFound}: Pr
     function checkForWord(word: string){
         if(words.includes(word)){
             // user found a word!
+
+            console.log("FOUND WORD, ",word)
             
             updateFound(prev => [...prev,word]);
             updateFoundLetterIds(prev => [...prev,...selectedLetterIds])

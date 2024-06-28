@@ -10,19 +10,20 @@ interface ValidDirection extends Position {
 
 interface WordGenerator {
     words: string[]
-    generateGrid: () => Promise<string[][]>
+    generateGrid: () => Promise<WordGenResponse>
 }
 
 interface WordGenResponse {
     words: string[],
-    unusedWords: string[],
     grid: string[][]
 }
 
 type Params = {
     newGrid: string[][]
     length: number
+    initWords: string[]
     words: string[]
+    unused: string[]
 }
 
 type Direction = 'right' | 'up' | 'down' | 'left' | 'right-up' | 'right-down' | 'left-up' | 'left-down'
@@ -42,12 +43,15 @@ function createGenerator(words: string[],gridLength: number): WordGenerator{
 
     return {
         words: words.sort((a,b) => b.length - a.length),
-        generateGrid: async () => await generate({newGrid,words,length: gridLength})
+        generateGrid: async () => await generate({newGrid,words,length: gridLength, unused: [], initWords: words})
     }
 }
 
-const generate = async ({newGrid, words,length}: Params): Promise<string[][]> => {
-    if(words.length == 0) return newGrid; // addRandomLetters(newGrid);
+const generate = async ({newGrid,initWords, words,length, unused}: Params): Promise<WordGenResponse> => {
+    if(words.length == 0) return {
+        grid: newGrid,
+        words: initWords.filter(w => unused.indexOf(w) === -1)
+    }; // addRandomLetters(newGrid);
 
     const currWord = words[0]
 
@@ -76,23 +80,23 @@ const generate = async ({newGrid, words,length}: Params): Promise<string[][]> =>
     } else {
         console.warn(`Unable to insert Word '${currWord}' in grid`)
 
-        if(sessionStorage.getItem('unused')){
-            sessionStorage.setItem('unused',sessionStorage.getItem('unused')+currWord+',')
-        } else {
-            sessionStorage.setItem('unused',currWord+',')
-        }
+        unused.push(currWord)
         
         return generate({
             newGrid,
             words: words.slice(1),
-            length
+            length,
+            unused,
+            initWords
         })
     }
 
     return await generate({
         newGrid,
         words: words.slice(1),
-        length
+        length,
+        unused,
+        initWords
     })
 }
 
@@ -248,4 +252,3 @@ function getPlacesAt(grid: string[][],pos: Position,range: number,direction: Exc
 
 
 export default createGenerator;
-
