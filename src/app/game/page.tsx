@@ -48,6 +48,7 @@ export default function Game(){
     },[])
 
     useEffect(() => {
+        console.log('done? ',foundWords.length == words.length)
         if(foundWords.length == words.length){
             // COMPLETED
             setSolved(false)
