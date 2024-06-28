@@ -49,7 +49,7 @@ function createGenerator(words: string[],gridLength: number): WordGenerator{
 
 const generate = async ({newGrid,initWords, words,length, unused}: Params): Promise<WordGenResponse> => {
     if(words.length == 0) return {
-        grid: newGrid,
+        grid: addRandomLetters(newGrid),
         words: initWords.filter(w => unused.indexOf(w) === -1)
     }; // addRandomLetters(newGrid);
 
