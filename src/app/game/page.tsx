@@ -12,6 +12,8 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 import { Button } from "@/components/ui/button";
 import { uuid } from "uuidv4";
 
+
+export const dynamic = 'force-dynamic'
 export default function Game(){
     const params = useSearchParams();
 
@@ -21,7 +23,7 @@ export default function Game(){
     let [words,setWords] = useState<string[]>(params.get('words')!.split(','));
     const gridGenerator = useMemo(() => createGenerator(words,gridLength),[words])
 
-    const [foundWords,updateFoundWords] = useState<string[]>([]);
+    const [foundWords,updateFoundWords] = useState<Set<string>>( new Set());
     const [timer,updateTimer] = useState<number>(0);
     const [isSolved,setSolved] = useState<boolean>(false)
 
@@ -30,6 +32,14 @@ export default function Game(){
         return `${Math.floor(timer / 60)}:${(timer % 60) > 9 ? (timer % 60) : '0'+(timer % 60)}`
 
     },[timer])
+
+    function addFound(word: string){
+        updateFoundWords(prev => {
+            prev.add(word)
+
+            return new Set(prev);
+        })
+    }
 
     const router = useRouter()
 
@@ -44,10 +54,11 @@ export default function Game(){
     },[])
 
     useEffect(() => {
-        console.log('done? ',foundWords.length == words.length)
-        if(foundWords.length == words.length){
+        console.log('found',foundWords.size)
+        console.log('total',words.length)
+        if(foundWords.size == words.length){
             // COMPLETED
-            setSolved(false)
+            setSolved(true)
             console.log("SOLVED")
         }
     },[foundWords])
@@ -85,7 +96,7 @@ export default function Game(){
                 </header>
                 <main className=' flex flex-col justify-center items-center'>
                     <section className="grow flex justify-center items-center">
-                        <WordSearchGrid  updateFound={updateFoundWords} words={words} length={gridLength} letters={grid}/>
+                        <WordSearchGrid  addFound={addFound} words={words} length={gridLength} letters={grid}/>
                     </section>
                 </main>
             </div>
@@ -99,7 +110,7 @@ export default function Game(){
                     {words.length > 0 ? 
                         <div className=" justify-center items-center">
                         {
-                            words.map((word: string) => <p key={uuid()} className={`block font-medium justify-center text-black text-xl ${foundWords.includes(word) && 'line-through opacity-70'}`} >{word.toUpperCase()}</p>)
+                            words.map((word: string) => <p key={uuid()} className={`block font-medium justify-center text-black text-xl ${foundWords.has(word) && 'line-through opacity-70'}`} >{word.toUpperCase()}</p>)
                         }
                         </div>    
                         :
@@ -109,7 +120,7 @@ export default function Game(){
                 <span className="text-3xl font-bold text-blue-500">{parsedTime}</span>
             </div>
         </div>
-        <Drawer open>
+        <Drawer open={isSolved}>
             <DrawerContent>
                 <DrawerHeader>
                     <DrawerTitle>

@@ -11,7 +11,7 @@ interface Props {
     letters: string[][];
     length: number;
     words: string[];
-    updateFound: Dispatch<SetStateAction<string[]>>
+    addFound: (word: string) => void
 }
 
 export type Direction = 'up'| 'down' | 'right' | 'left' | null | 'upL' | 'upR' | 'downL' | 'downR'
@@ -48,7 +48,7 @@ export function create2dArray<T>(length: number, letters: string[][]): T[][] {
     return newArr;
 }
 
-export default function WordSearchGrid({length, letters, words, updateFound}: Props){
+export default function WordSearchGrid({length, letters, words, addFound}: Props){
 
     const [isSelecting,setSelecting] = useState<boolean>(false);
     const [selectingDirection,setDirection] = useState<Direction>(null)
@@ -102,8 +102,8 @@ export default function WordSearchGrid({length, letters, words, updateFound}: Pr
             // user found a word!
 
             console.log("FOUND WORD, ",word)
-            
-            updateFound(prev => [...prev,word]);
+
+            addFound(word)
             updateFoundLetterIds(prev => [...prev,...selectedLetterIds])
         }
     }
